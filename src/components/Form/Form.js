@@ -1,29 +1,49 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import useStyles from "./styles"
 import { TextField, Button, Typography, Paper } from '@material-ui/core'
 import FileBase from "react-file-base64"
 import { useDispatch } from "react-redux"
-import { createPost } from '../../actions/posts'
+import { createPost, updatePost } from '../../actions/posts'
+import { useSelector } from 'react-redux'
+// - Get the current ID of the post (for updating posts)
 
-const Form = () => {
+const Form = ({ currentId, setCurrentId }) => {
     const [postData, setPostData] = useState({
         creator: "",
         title: "",
         message: "",
-        tag: "",
+        tags: "",
         selectedFile: ""
     })
+
+    const post = useSelector((state) => currentId ? state.posts.find((p) => p._id === currentId) : null)
+    useEffect(() => {
+        if(post) setPostData(post)
+    }, [post])
 
     const classes = useStyles()
     
     const handleSubmit = (e) => {
         e.preventDefault()
 
-        dispatch(createPost(postData))
+        if(currentId) {
+            dispatch(updatePost(currentId, postData))
+        } else {
+            dispatch(createPost(postData))
+        }
+
+        clear()
     }
 
     const clear = () => {
-
+        setCurrentId(null)
+        setPostData({
+            creator: "",
+            title: "",
+            message: "",
+            tags: "",
+            selectedFile: ""
+        })
     }
 
     const dispatch = useDispatch()
@@ -31,7 +51,7 @@ const Form = () => {
     return (
         <Paper className={classes.paper}>
             <form action="" autoComplete='off' noValidate className={`${classes.root} ${classes.form}`} onSubmit={handleSubmit}>
-                <Typography variant="h6">Creating a memory</Typography>
+                <Typography variant="h6">{currentId ? 'Editing' : 'Creating'} a memory</Typography>
                 <TextField
                     name="creator" 
                     variant="outlined" 
@@ -65,7 +85,7 @@ const Form = () => {
                     label="Tags" 
                     fullWidth
                     value={postData.tags}
-                    onChange={(e) => setPostData({ ...postData, tag: e.target.value })}>
+                    onChange={(e) => setPostData({ ...postData, tags: e.target.value })}>
                 </TextField>
 
                 <div className={classes.fileInput}>

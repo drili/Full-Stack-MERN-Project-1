@@ -8,20 +8,33 @@ import Input from "./Input"
 import Icon from './icon'
 import { useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
+import { signin, signup } from "../../actions/auth"
+
+const initialState = { firstName: '', lastName: '', email: '', password: '', confirmPassword: '' }
 
 function Auth() {
     const classes = useStyles()
     const [showPassword, setShowPassword] = useState(false)
     const [isSignUp, setIsSignUp] = useState(false)
+    const [formData, setFormData] = useState(initialState)
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
-    const handleSubmit = () => {
+    const handleSubmit = (e) => {
+        e.preventDefault()
 
+        // console.log(formData)
+        if (isSignup) {
+            dispatch(signup(formData, history))
+        } else {
+            dispatch(signin(formData, history))
+        }
     }
 
-    const handleChange = () => {
-
+    const handleChange = (e) => {
+        setFormData({
+            ...formData, [e.target.name]: e.target.value
+        })
     }
 
     const handleShowPassword = () => setShowPassword((prevShowPassword) => !prevShowPassword)

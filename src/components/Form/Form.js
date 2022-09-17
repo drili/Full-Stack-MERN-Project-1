@@ -9,27 +9,27 @@ import { useSelector } from 'react-redux'
 
 const Form = ({ currentId, setCurrentId }) => {
     const [postData, setPostData] = useState({
-        creator: "",
         title: "",
         message: "",
         tags: "",
         selectedFile: ""
     })
-
+    const dispatch = useDispatch()
+    const user = JSON.parse(localStorage.getItem("profile"))
     const post = useSelector((state) => currentId ? state.posts.find((p) => p._id === currentId) : null)
+    const classes = useStyles()
+
     useEffect(() => {
         if(post) setPostData(post)
     }, [post])
-
-    const classes = useStyles()
     
     const handleSubmit = (e) => {
         e.preventDefault()
 
         if(currentId) {
-            dispatch(updatePost(currentId, postData))
+            dispatch(updatePost(currentId, { ...postData, name: user?.result?.name }))
         } else {
-            dispatch(createPost(postData))
+            dispatch(createPost({ ...postData, name: user?.result?.name }))
         }
 
         clear()
@@ -38,7 +38,6 @@ const Form = ({ currentId, setCurrentId }) => {
     const clear = () => {
         setCurrentId(null)
         setPostData({
-            creator: "",
             title: "",
             message: "",
             tags: "",
@@ -46,20 +45,28 @@ const Form = ({ currentId, setCurrentId }) => {
         })
     }
 
-    const dispatch = useDispatch()
+    if (!user?.result?.name) {
+        return (
+            <Paper className={classes.paper}>
+                <Typography variant="h6" align="center">
+                    Please Sign In to create your own memories.
+                </Typography>
+            </Paper>
+        )
+    }
 
     return (
         <Paper className={classes.paper}>
             <form action="" autoComplete='off' noValidate className={`${classes.root} ${classes.form}`} onSubmit={handleSubmit}>
                 <Typography variant="h6">{currentId ? 'Editing' : 'Creating'} a memory</Typography>
-                <TextField
+                {/* <TextField
                     name="creator" 
                     variant="outlined" 
                     label="Creator" 
                     fullWidth
                     value={postData.creator}
                     onChange={(e) => setPostData({ ...postData, creator: e.target.value })}>
-                </TextField>
+                </TextField> */}
 
                 <TextField
                     name="title" 

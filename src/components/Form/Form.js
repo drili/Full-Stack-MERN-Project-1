@@ -14,9 +14,13 @@ const Form = ({ currentId, setCurrentId }) => {
         tags: "",
         selectedFile: ""
     })
+
     const dispatch = useDispatch()
+
     const user = JSON.parse(localStorage.getItem("profile"))
+
     const post = useSelector((state) => currentId ? state.posts.find((p) => p._id === currentId) : null)
+    
     const classes = useStyles()
 
     useEffect(() => {

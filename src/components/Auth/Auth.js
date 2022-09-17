@@ -24,10 +24,10 @@ function Auth() {
         e.preventDefault()
 
         // console.log(formData)
-        if (isSignup) {
-            dispatch(signup(formData, history))
+        if (isSignUp) {
+            dispatch(signup(formData, navigate))
         } else {
-            dispatch(signin(formData, history))
+            dispatch(signin(formData, navigate))
         }
     }
 

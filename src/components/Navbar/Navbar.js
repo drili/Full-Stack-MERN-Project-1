@@ -4,6 +4,7 @@ import useStyles from "./styles"
 import memories from "../../images/memories.png"
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useDispatch } from "react-redux"
+import decode from "jwt-decode"
 
 function Navbar() {
     const classes = useStyles()
@@ -13,8 +14,16 @@ function Navbar() {
     const [user, setUser] = useState(JSON.parse(localStorage.getItem("profile")))
 
     useEffect(() => {
+        // - Get and check for JWT (JASON Web Token)
         const token = user?.token
-        // - Check for JWT (JASON Web Token)
+        
+        if (token) {
+            const decodedToken = decode(token)
+
+            if (decodedToken.exp * 1000 < new Date().getTime()) {
+                logout()
+            }
+        }
 
         setUser(JSON.parse(localStorage.getItem("profile")))
     }, [location])
